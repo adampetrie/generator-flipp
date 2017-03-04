@@ -1,36 +1,40 @@
 'use strict';
 var Generator = require('yeoman-generator');
+var path = require('path');
+var askName = require('inquirer-npm-name');
 var chalk = require('chalk');
 var yosay = require('yosay');
 
 module.exports = Generator.extend({
+  initializing() {
+    this.props = {};
+  },
+
   prompting: function () {
     // Have Yeoman greet the user.
     this.log(yosay(
       'Welcome to the sublime ' + chalk.red('Flipp Express') + ' generator!'
     ));
 
-    var prompts = [{
-      type: 'confirm',
-      name: 'someAnswer',
-      message: 'Would you like to enable this option?',
-      default: true
-    }];
-
-    return this.prompt(prompts).then(function (props) {
-      // To access props later use this.props.someAnswer;
-      this.props = props;
-    }.bind(this));
+    return askName({
+      name: 'name',
+      message: 'Your generator name',
+      default: path.basename(process.cwd())
+    }, this)
+    .then(props => {
+      this.props.name = props.name;
+    });
   },
 
   writing: function () {
-    this.fs.copy(
+    this.fs.copyTpl(
       this.templatePath('./**/*'),
-      this.destinationPath('./')
+      this.destinationPath('./'),
+      {name: this.props.name}
     );
   },
 
   install: function () {
-    this.installDependencies();
+    this.installDependencies({bower: false});
   }
 });
