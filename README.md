@@ -13,7 +13,7 @@ npm install -g generator-flipp
 Then generate your new project:
 
 ```bash
-yo flipp
+yo flipp:express
 ```
 
 ## Getting To Know Yeoman
